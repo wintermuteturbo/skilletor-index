@@ -8,11 +8,11 @@ skilletor will use this index by default. Until then, add it to a manifest, your
 
 ```toml
 [registries.skilletor]
-index = "https://index.skilletor.bartoldi.xyz"
+index = "https://index.skilletor.bartoldi.xyz//"
 scopes = ["@wintermuteturbo"]
 ```
 
-When it's the only registry a manifest names, it serves every scope, whatever `scopes` lists. Then:
+The URL ends in two slashes because skilletor 0.2.0 refuses an index URL with nothing after the host's `/`; the next release accepts `https://index.skilletor.bartoldi.xyz/`. When it's the only registry a manifest names, it serves every scope, whatever `scopes` lists. Then:
 
 ```sh
 skilletor search diagrams
