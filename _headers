@@ -1,5 +1,6 @@
-# Response headers for every file the index serves.
+# Response headers for every file the index serves. The browse page loads its script, its styles
+# and search.json from this origin alone.
 /*
   X-Content-Type-Options: nosniff
   Strict-Transport-Security: max-age=31536000
-  Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'

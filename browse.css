@@ -1,0 +1,97 @@
+/* The website's palette and type (skilletor.bartoldi.xyz), with a light variant. */
+:root {
+  --bg: oklch(0.985 0.006 90);
+  --fg: oklch(0.24 0.02 300);
+  --dim: oklch(0.45 0.02 290);
+  --line: color-mix(in oklch, var(--fg) 16%, transparent);
+  --panel: color-mix(in oklch, var(--fg) 5%, var(--bg));
+  --accent: oklch(0.55 0.2 28);
+  color-scheme: light dark;
+  font: 15px/1.55 ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: oklch(0.15 0.012 300);
+    --fg: oklch(0.9 0.025 90);
+    --dim: oklch(0.66 0.02 290);
+    --line: color-mix(in oklch, var(--fg) 14%, transparent);
+    --panel: color-mix(in oklch, var(--fg) 4%, var(--bg));
+    --accent: oklch(0.8 0.17 40);
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  color: var(--fg);
+  background: var(--bg);
+}
+header, main, footer {
+  width: min(100% - 32px, 46rem);
+  margin-inline: auto;
+}
+header { padding-block: clamp(24px, 6vh, 56px) 16px; }
+h1 { margin: 0 0 8px; font-size: 1.4rem; font-weight: 600; }
+p { margin: 0; }
+a { color: inherit; text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+header p, footer p, #status { color: var(--dim); }
+
+label { display: block; margin-block: 8px 6px; color: var(--dim); }
+input {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+#status { margin-block: 12px; }
+
+ol { list-style: none; margin: 0; padding: 0; }
+li {
+  display: grid;
+  /* One column no wider than the list, so a long name or command wraps instead of widening it. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  padding-block: 16px;
+  border-top: 1px solid var(--line);
+}
+.head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.name { font-weight: 600; overflow-wrap: anywhere; }
+.version, .repository { color: var(--dim); }
+.kind {
+  padding: 0 6px;
+  font-size: 0.85em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.description { overflow-wrap: anywhere; }
+.repository { overflow-wrap: anywhere; justify-self: start; }
+.command {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.command code { flex: 1; min-width: 0; overflow-wrap: anywhere; font: inherit; }
+.copy {
+  flex: none;
+  padding: 4px 10px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.copy:hover, .copy:focus-visible { color: var(--accent); border-color: currentColor; }
+
+footer { padding-block: 24px 48px; border-top: 1px solid var(--line); }
