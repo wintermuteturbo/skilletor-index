@@ -44,9 +44,10 @@ Lines are never edited or deleted, because lockfiles record them. To remove a sk
 | `config.json` | The index's protocol, name and search file, and where `skilletor publish` opens its pull requests |
 | `packages/@<owner>/<skill>.jsonl` | One line per version: the repository, commit, folder, tree digest and licence |
 | `repositories.txt` | The repositories the daily refresh lists |
+| `index.html`, `browse.js`, `browse.css` | The page at `https://index.skilletor.bartoldi.xyz/` that lists the index and filters it as `skilletor search` does |
 
 - **Check**, on every pull request: each line validates, its content matches its tree digest, and its licence is the one the content names and OSI-approved.
 - **Refresh**, daily at 06:17 UTC and by hand: lists every repository in `repositories.txt` again and opens a pull request from the `refresh` branch with the new lines.
-- **Deploy**, on every push to main: checks the index again, writes `search.json` and deploys the files.
+- **Deploy**, on every push to main: checks the index again, writes `search.json` and deploys the files and the page.
 
 `skilletor-index` is skilletor's index tool, installed from [skilletor's releases](https://github.com/wintermuteturbo/skilletor-releases) at the version and checksum pinned in `.github/actions/skilletor-index/action.yml`.
