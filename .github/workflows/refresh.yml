@@ -24,7 +24,8 @@ jobs:
   refresh:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # Listing 24 repositories again took about 12 minutes.
+    timeout-minutes: 60
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
