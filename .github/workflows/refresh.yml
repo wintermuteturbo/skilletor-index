@@ -1,0 +1,72 @@
+# Daily, lists every repository in repositories.txt again and opens a pull request from the
+# `refresh` branch with the lines it appended (D109); run it by hand to refresh now. The branch
+# is rebuilt from main each run, so one pull request carries every new line until it merges.
+# A pull request opened with the workflow token starts no workflow, so this runs the check on
+# the branch itself. Opening it needs the repository's "Allow GitHub Actions to create and
+# approve pull requests" setting. Actions are pinned by commit.
+name: Refresh
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/skilletor-index
+      - name: Refresh the listed repositories
+        id: refresh
+        # A repository that can't be listed fails the run at the end, after the others' lines
+        # are proposed.
+        run: |
+          set +e
+          skilletor-index refresh . | tee "$RUNNER_TEMP/appended.txt"
+          echo "status=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+      - name: Propose the new lines
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- packages)" ]; then
+            echo "No new lines."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C refresh
+          git add -- packages
+          git commit --quiet --message "Refresh the listed repositories"
+          git push --force --quiet origin refresh
+          {
+            echo "Lines \`skilletor-index refresh\` appended:"
+            echo
+            echo '```text'
+            cat "$RUNNER_TEMP/appended.txt"
+            echo '```'
+          } > "$RUNNER_TEMP/body.md"
+          if [ "$(gh pr list --head refresh --state open --json number --jq length)" = "0" ]; then
+            gh pr create --base main --head refresh \
+              --title "Refresh the listed repositories" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh pr edit refresh --body-file "$RUNNER_TEMP/body.md"
+          fi
+          gh workflow run check.yml --ref refresh
+      - name: Fail when a repository couldn't be listed
+        if: steps.refresh.outputs.status != '0'
+        run: |
+          echo "::error::skilletor-index refresh exited ${{ steps.refresh.outputs.status }}; its log names each repository it couldn't list."
+          exit 1

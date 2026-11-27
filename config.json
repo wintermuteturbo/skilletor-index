@@ -1,0 +1,8 @@
+{
+  "protocol": "skilletor-index/1",
+  "name": "skilletor",
+  "auth": "none",
+  "search": "search.json",
+  "publish": { "via": "pull-request", "repo": "https://github.com/wintermuteturbo/skilletor-index" },
+  "repositories": "repositories.txt"
+}

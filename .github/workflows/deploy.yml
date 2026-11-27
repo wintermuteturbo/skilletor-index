@@ -1,0 +1,59 @@
+# On every push to main, checks the index, writes its search file and deploys it to
+# index.skilletor.bartoldi.xyz, an assets-only Cloudflare Worker (D105, D109); run it by hand to
+# redeploy. The Cloudflare token and account id live in the `index` environment, which only main
+# can use, and reach only the deploy step. Actions are pinned by commit; wrangler by exact version.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time, never cancelled halfway.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: index
+      url: https://index.skilletor.bartoldi.xyz/config.json
+    env:
+      # Only whether the secrets are set; `if` can't read secrets directly.
+      CAN_DEPLOY: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/skilletor-index
+      # A push straight to main skips the pull request's check, so nothing deploys unchecked.
+      - name: Check the index
+        run: skilletor-index check . --osi
+      - name: Write the search file
+        run: skilletor-index search .
+      - name: Assemble the files to serve
+        run: |
+          set -euo pipefail
+          mkdir _site
+          cp config.json search.json _headers _site/
+          if [ -d packages ]; then cp -R packages _site/; fi
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Deploy
+        # Until the environment has its secrets, the run says so and deploys nothing.
+        if: env.CAN_DEPLOY == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4.158.0 deploy --config wrangler.jsonc
+      - name: Say why nothing was deployed
+        if: env.CAN_DEPLOY != 'true'
+        run: echo "::warning::Not deployed. The index environment needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."

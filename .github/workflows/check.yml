@@ -1,0 +1,24 @@
+# Checks every pull request: config.json and each package file validate, each version's content
+# matches its tree digest, and its licence is the one its content names and OSI-approved (D107,
+# D136). The refresh workflow runs it by hand on its own pull request, since a pull request opened
+# with the workflow token starts no workflow. Actions are pinned by commit.
+name: Check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/skilletor-index
+      - name: Check the index
+        run: skilletor-index check . --osi

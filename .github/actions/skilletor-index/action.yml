@@ -1,0 +1,27 @@
+# Installs skilletor-index from skilletor's public releases and puts it on the PATH. The archive
+# is checked against the SHA-256 pinned here, so a download that changed fails instead of running.
+# To move to a new release, change VERSION and SHA256 together.
+name: skilletor-index
+description: Install skilletor-index, pinned by version and SHA-256
+
+runs:
+  using: composite
+  steps:
+    - name: Install skilletor-index
+      shell: bash
+      env:
+        VERSION: "0.2.0"
+        SHA256: "e87d33eaf063626c654bae17627021383f31caca1dafa63e1f13e878899eb6fa"
+        TARGET: x86_64-unknown-linux-musl
+      run: |
+        set -euo pipefail
+        archive="skilletor-index-$TARGET.tar.xz"
+        curl --fail --silent --show-error --location --retry 3 \
+          --output "$RUNNER_TEMP/$archive" \
+          "https://github.com/wintermuteturbo/skilletor-releases/releases/download/v$VERSION/$archive"
+        echo "$SHA256  $RUNNER_TEMP/$archive" | sha256sum --check --strict -
+        mkdir -p "$RUNNER_TEMP/skilletor-index"
+        tar --extract --xz --file "$RUNNER_TEMP/$archive" \
+          --directory "$RUNNER_TEMP/skilletor-index" --strip-components 1
+        echo "$RUNNER_TEMP/skilletor-index" >> "$GITHUB_PATH"
+        "$RUNNER_TEMP/skilletor-index/skilletor-index" --version

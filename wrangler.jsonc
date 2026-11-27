@@ -1,0 +1,14 @@
+// index.skilletor.bartoldi.xyz: an assets-only Worker. No script runs; Cloudflare serves _site/,
+// which the deploy workflow assembles from config.json, packages/, the search file and _headers.
+{
+  "name": "skilletor-index",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./_site",
+    "not_found_handling": "none"
+  },
+  // Served only on its own domain, which `wrangler deploy` creates (the zone is on this account).
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "index.skilletor.bartoldi.xyz", "custom_domain": true }]
+}
