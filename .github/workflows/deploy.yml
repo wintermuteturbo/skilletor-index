@@ -21,7 +21,8 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # The check fetches every listed version's source: about 7 minutes at 1,700 versions.
+    timeout-minutes: 45
     environment:
       name: index
       url: https://index.skilletor.bartoldi.xyz/config.json
