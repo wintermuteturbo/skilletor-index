@@ -4,7 +4,14 @@ The public index of [skilletor](https://skilletor.bartoldi.xyz): agent skills fr
 
 ## Use it
 
-skilletor will use this index by default. Until then, add it to a manifest, your user manifest `~/.config/skilletor/skilletor.toml` or a project's `skilletor.toml`:
+skilletor 0.3.1 and later use this index by default, as the registry named `skilletor`, for every scope no registry of your own serves:
+
+```sh
+skilletor search diagrams
+skilletor add -g @wintermuteturbo/diagrams
+```
+
+With skilletor 0.2.0, add it to a manifest, your user manifest `~/.config/skilletor/skilletor.toml` or a project's `skilletor.toml`. The URL ends in two slashes because 0.2.0 refuses an index URL with nothing after the host's `/`. When it's the only registry a manifest names, it serves every scope, whatever `scopes` lists:
 
 ```toml
 [registries.skilletor]
@@ -12,12 +19,7 @@ index = "https://index.skilletor.bartoldi.xyz//"
 scopes = ["@wintermuteturbo"]
 ```
 
-The URL ends in two slashes because skilletor 0.2.0 refuses an index URL with nothing after the host's `/`; the next release accepts `https://index.skilletor.bartoldi.xyz/`. When it's the only registry a manifest names, it serves every scope, whatever `scopes` lists. Then:
-
-```sh
-skilletor search diagrams
-skilletor add -g @wintermuteturbo/diagrams
-```
+0.3.0 uses the index by default too, but can't install the skills whose repository keeps its licence in a `LICENSE.md` or `LICENSE.txt` above them; update to 0.3.1.
 
 ## What gets listed
 

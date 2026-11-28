@@ -10,8 +10,8 @@ runs:
     - name: Install skilletor-index
       shell: bash
       env:
-        VERSION: "0.2.0"
-        SHA256: "e87d33eaf063626c654bae17627021383f31caca1dafa63e1f13e878899eb6fa"
+        VERSION: "0.3.1"
+        SHA256: "c4b4b4ff3fdcb1f1fb095d4be428a5e71c919a5e5b5b296ea9f7024352444b66"
         TARGET: x86_64-unknown-linux-musl
       run: |
         set -euo pipefail
